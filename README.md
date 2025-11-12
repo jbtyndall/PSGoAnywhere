@@ -1,5 +1,21 @@
 # PSGoAnywhere
-PowerShell module for interacting with Fortra GoAnywhere MFT.
+
+**PSGoAnywhere** is a PowerShell module for managing [Fortra GoAnywhere MFT](https://www.goanywhere.com/) via its REST API.  
+It provides cmdlets for creating, retrieving, updating, and removing Web Users, making automation of GoAnywhere user management simple and efficient.
+
+## Installation
+
+You can install **PSGoAnywhere** directly from the [PowerShell Gallery](https://www.powershellgallery.com/packages/PSGoAnywhere) using:
+
+```powershell
+Install-Module -Name PSGoAnywhere
+```
+
+To update an existing installation:
+
+```powershell
+Update-Module -Name PSGoAnywhere
+```
 
 ## Prerequisites
 
@@ -12,18 +28,24 @@ Set credentials as environment variables:
 $env:GOANYWHERE_API_USERNAME = "your-api-username"
 $env:GOANYWHERE_API_KEY = "your-api-key"
 ```
+## Getting Started
 
-## Cmdlets
+### Create GoAnywhere Client
 
-### `New-GAClient`
-
-Creates a GoAnywhere client object for API calls.
+Create a client object to authenticate with the GoAnywhere REST API:
 
 ```powershell
-$client = New-GAClient -BaseUri "https://server.example.com:8001/goanywhere/rest/gacmd/v1" -TestConnection
+$client = New-GAClient -ApiUsername "apiuser" -ApiKey "YourApiKey" -BaseUri "https://server.example.com:8001/goanywhere/rest/gacmd/v1"
+```
+Optionally, test the connection:
+
+```powershell
+$client = New-GAClient -ApiUsername "apiuser" -ApiKey "YourApiKey" -BaseUri "https://server.example.com:8001/goanywhere/rest/gacmd/v1" -TestConnection
 ```
 
-### `Get-GAWebUser`
+### Web User Management
+
+#### Retrieve a Web User
 
 Retrieve one or all Web Users.
 
@@ -32,7 +54,7 @@ Get-GAWebUser -Client $client -Username "user1"
 Get-GAWebUser -Client $client
 ```
 
-### `New-GAWebUser`
+#### Create a new Web User
 
 Create a new Web User.
 
@@ -40,7 +62,7 @@ Create a new Web User.
 New-GAWebUser -Client $client -Username "user1" -FirstName "John" -LastName "Doe" -Email "user1@example.com" -Organization "IT"
 ```
 
-### `Set-GAWebUser`
+#### Update an existing Web User
 
 Update an existing Web User.
 
@@ -48,13 +70,24 @@ Update an existing Web User.
 Set-GAWebUser -Client $client -Username "user1" -Properties @{organization="IT" phone="555-1234"}
 ```
 
-### `Remove-GAWebUser`
+#### Remove a Web User
 
 Delete a Web User.
 
 ```powershell
 Remove-GAWebUser -Client $client -Username "user1"
 ```
+
+## Cmdlets
+
+| Cmdlet             | Description                                                |
+| ------------------ | ---------------------------------------------------------- |
+| `New-GAClient`     | Creates a GoAnywhere client object for API authentication. |
+| `Get-GAWebUser`    | Retrieves one or more GoAnywhere Web Users.                |
+| `New-GAWebUser`    | Creates a new GoAnywhere Web User.                         |
+| `Set-GAWebUser`    | Updates properties of a GoAnywhere Web User.               |
+| `Remove-GAWebUser` | Deletes a GoAnywhere Web User.                             |
+
 
 ## Best Practices
 - Use `-Verbose` during testing for detailed request/response logging.
