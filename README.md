@@ -37,7 +37,7 @@ Get-GAWebUser -Client $client
 Create a new Web User.
 
 ```powershell
-
+New-GAWebUser -Client $client -Username "user1" -FirstName "John" -LastName "Doe" -Email "user1@example.com" -Organization "IT"
 ```
 
 ### `Set-GAWebUser`
