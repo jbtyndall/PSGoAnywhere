@@ -45,7 +45,7 @@ function New-GAClient {
 
     $header = @{
         Authorization = "Basic $encodedPair"
-        Accept        = "application/json"
+        Accept        = "application/xml"
     }
 
     $client = [PSCustomObject]@{
