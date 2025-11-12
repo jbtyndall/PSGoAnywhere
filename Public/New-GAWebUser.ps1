@@ -3,8 +3,8 @@
 Creates a new GoAnywhere Web User.
 
 .DESCRIPTION
-Performs a POST request to add a new Web User using a template. 
-Returns $null on success.
+Performs a POST request to add a new Web User. 
+Returns $true if successful, $false otherwise.
 
 .PARAMETER Client
 A GoAnywhere client object returned by New-GAClient.
@@ -13,16 +13,16 @@ A GoAnywhere client object returned by New-GAClient.
 The username for the new Web User.
 
 .PARAMETER FirstName
-First name of the user.
+Optional first name of the user.
 
 .PARAMETER LastName
-Last name of the user.
+Optional last name of the user.
 
 .PARAMETER Email
-Email address of the user.
+Optional email address of the user.
 
 .PARAMETER Organization
-The organization or department name.
+Optional organization or department name.
 
 .PARAMETER Phone
 Optional phone number.
@@ -34,7 +34,7 @@ Optional Web User template name. Defaults to built-in "Web User Template".
 New-GAWebUser -Client $client -Username "jdoe" -FirstName "John" -LastName "Doe" -Email "jdoe@example.com"
 
 .EXAMPLE
-New-GAWebUser -Client $client -Username "jdoe" -FirstName "John" -LastName "Doe" -Email "jdoe@example.com" -Organization "ARL"
+New-GAWebUser -Client $client -Username "jdoe" -FirstName "John" -LastName "Doe" -Email "jdoe@example.com" -Organization "Example Org"
 #>
 function New-GAWebUser {
     [CmdletBinding()]
@@ -74,17 +74,15 @@ function New-GAWebUser {
 
         Write-Verbose "Response content length: $($response.Content.Length) bytes"
 
-        if ($response.Content) {
-            [xml]$xmlResponse = $response.Content
-        
-            $users = @($xmlResponse.webUsers.webUser)
-        
-            if ($users.Count -eq 1) { return $users[0] }
-        
-            return $users
-        }
+        if ($response.StatusCode -in 200,201) { 
+            Write-Verbose "Successfully created Web User '$Username'."
 
-        return $null
+            return $true
+        } else {
+            Write-Verbose "Unexpected status code $($response.StatusCode). Returning `$false."
+
+            return $false
+        }
     }
     catch {
         $statusCode = $null
@@ -95,10 +93,12 @@ function New-GAWebUser {
 
         Write-Verbose "Caught exception. Status code: $statusCode. Message: $($_.Exception.Message)"
 
-        if ($statusCode -in 401,404) {
-            Write-Verbose "Web User '$Username' not found or creation failed (401/404). Returning `$null."
-            return $null
-        }
+        switch ($statusCode) {
+            400 { Write-Verbose "Web User '$Username' already exists."; return $false }
+            401 { Write-Verbose "Unauthorized. Check credentials."; return $false }
+            404 { Write-Verbose "Endpoint not found."; return $false }
+            default { throw "Failed to create Web User '$Username': $($_.Exception.Message)" }
+    }
 
         throw "Failed to create Web User '$Username': $($_.Exception.Message)"
     }

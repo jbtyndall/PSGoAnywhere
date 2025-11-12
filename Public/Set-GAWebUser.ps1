@@ -4,7 +4,7 @@ Updates attributes of a GoAnywhere Web User.
 
 .DESCRIPTION
 Performs a PUT request to modify Web User properties such as first name, last name, organization, phone, or enabled status.
-Returns $null on success.
+Returns $true if successful, $false otherwise.
 
 .PARAMETER Client
 A GoAnywhere client object returned by New-GAClient.
@@ -31,7 +31,7 @@ function Set-GAWebUser {
         [Parameter(Mandatory)][hashtable]$Properties
     )
 
-    # The 'userName' field is required for updates."
+    # Include username (required by GoAnywhere API)
     if (-not $Properties.ContainsKey("userName")) {
         $Properties["userName"] = $Username
     }
@@ -49,19 +49,15 @@ function Set-GAWebUser {
 
         Write-Verbose "Received HTTP $($response.StatusCode) response"
 
-        Write-Verbose "Response content length: $($response.Content.Length) bytes"
+        if ($response.StatusCode -in 200,201) { 
+            Write-Verbose "Successfully updated Web User '$Username'."
 
-        if ($response.Content) {
-            [xml]$xmlResponse = $response.Content
+            return $true
+        } else {
+            Write-Verbose "Unexpected status code $($response.StatusCode). Returning `$false."
 
-            $users = @($xmlResponse.webUsers.webUser)
-
-            if ($users.Count -eq 1) { return $users[0] }
-
-            return $users
+            return $false
         }
-
-        return $null
     }
     catch {
         $statusCode = $null
@@ -74,7 +70,7 @@ function Set-GAWebUser {
 
         if ($statusCode -in 401,404) {
             Write-Verbose "Web User '$Username' not found (401/404). Returning `$null."
-            return $null
+            return $false
         }
 
         throw "Failed to update Web User '$Username': $($_.Exception.Message)"
