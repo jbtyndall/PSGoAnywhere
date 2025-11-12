@@ -4,7 +4,8 @@ Retrieves one or more GoAnywhere Web Users.
 
 .DESCRIPTION
 Queries the GoAnywhere REST API for a specific Web User or all Web Users if no username is provided.
-Returns $null if the specified Web User is not found (401 or 404).
+Returns an [xml] object representing the Web User, an array of [xml] objects for multiple users,
+or $null if the user is not found or no users exist.
 
 .PARAMETER Client
 A GoAnywhere client object returned by New-GAClient.
