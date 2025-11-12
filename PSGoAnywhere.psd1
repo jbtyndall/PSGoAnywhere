@@ -39,7 +39,7 @@
 
     PrivateData = @{
         PSData = @{
-            Tags        = @('PowerShell', 'GoAnywhere', 'GoAnywhere MFT', 'Fortra', 'Automation', 'REST', 'UserManagement', 'Integration')
+            Tags        = @('PowerShell', 'GoAnywhere', 'Fortra', 'Automation', 'REST', 'UserManagement', 'Integration')
             LicenseUri  = 'https://opensource.org/licenses/MIT'
             ProjectUri  = 'https://github.com/jbtyndall/PSGoAnywhere'
             IconUri     = 'https://www.goanywhere.com/themes/custom/goanywhere/favicon.ico'
